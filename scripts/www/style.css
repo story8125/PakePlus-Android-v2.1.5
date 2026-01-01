@@ -1,0 +1,885 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 5px;
+    overflow-x: hidden;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 16px;
+}
+
+header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.header-settings-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.header-settings-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+.header-settings-btn:active {
+    transform: scale(0.95);
+}
+
+main {
+    padding: 16px;
+}
+
+.timer-section {
+    background: #f8f9fa;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.timer-section.wastewater {
+    border-color: #e74c3c;
+}
+
+.timer-section.purified {
+    border-color: #3498db;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.status {
+    font-size: 14px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: #95a5a6;
+    color: white;
+    font-weight: 500;
+}
+
+.status.running {
+    background: #27ae60;
+}
+
+.status.completed {
+    background: #e74c3c;
+}
+
+.timer-display {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.time {
+    font-size: 40px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-variant-numeric: tabular-nums;
+}
+
+.label {
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+/* 圆形进度条样式 */
+.timer-display {
+    text-align: center;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: center;
+}
+
+.circular-progress {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+    fill: none;
+    stroke: #e0e0e0;
+    stroke-width: 8;
+}
+
+.progress-ring-circle {
+    fill: none;
+    stroke: #667eea;
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s ease;
+    stroke-dasharray: 565.48;
+    stroke-dashoffset: 565.48;
+}
+
+.wastewater .progress-ring-circle {
+    stroke: #e74c3c;
+}
+
+.purified .progress-ring-circle {
+    stroke: #3498db;
+}
+
+.time-in-circle {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.time {
+    font-size: 40px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-variant-numeric: tabular-nums;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-start {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 100%;
+}
+
+.btn-complete {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    color: white;
+    width: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 100%;
+    padding: 14px;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    width: 100%;
+    max-width: 360px;
+    max-height: 90vh;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.modal-message {
+    font-size: 18px;
+    color: #2c3e50;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.modal-content.completion {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.modal-content.completion .modal-message {
+    color: white;
+}
+
+.modal-content.completion .btn-primary {
+    background: white;
+    color: #667eea;
+}
+
+.settings-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.settings-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.settings-btn:active {
+    transform: scale(0.98);
+}
+
+.settings-content {
+    max-height: 70vh;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-content h2 {
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-size: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.settings-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding-bottom: 0;
+    overflow-x: auto;
+    flex-shrink: 0;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    color: #7f8c8d;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    min-width: 80px;
+}
+
+.tab-btn.active {
+    color: #667eea;
+}
+
+.tab-btn:hover:not(.active) {
+    color: #667eea;
+}
+
+.settings-tab-content {
+    min-height: 200px;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 4px;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+.setting-item label {
+    flex: 0 0 auto;
+    min-width: 120px;
+    color: #2c3e50;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.setting-item input,
+.setting-item select {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease;
+    background: #fafafa;
+    min-width: 0;
+}
+
+.setting-item input:focus,
+.setting-item select:focus {
+    border-color: #667eea;
+    background: white;
+}
+
+.music-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.music-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    gap: 12px;
+}
+
+.music-item:hover {
+    background: #f0f1f3;
+    transform: translateX(4px);
+}
+
+.music-item.active {
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+}
+
+.music-icon {
+    font-size: 28px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.music-info {
+    flex: 1;
+}
+
+.music-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 4px;
+}
+
+.music-desc {
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+.music-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #667eea;
+    color: white;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.music-item.active .music-check {
+    display: flex;
+}
+
+.setting-item input:focus,
+.setting-item select:focus {
+    border-color: #667eea;
+}
+
+.settings-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.btn-secondary {
+    flex: 1;
+    padding: 12px 20px;
+    border: 1px solid #667eea;
+    background: white;
+    color: #667eea;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary:active {
+    transform: translateY(0);
+}
+
+.settings-buttons .btn-primary {
+    flex: 1.2;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.settings-buttons .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.settings-buttons .btn-primary:active {
+    transform: translateY(0);
+}
+
+/* 电池优化设置样式 */
+.battery-notice {
+    text-align: center;
+    padding: 20px;
+}
+
+.battery-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.battery-notice h3 {
+    color: #2c3e50;
+    font-size: 20px;
+    margin-bottom: 16px;
+}
+
+.battery-notice p {
+    color: #7f8c8d;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.battery-hint {
+    color: #667eea;
+    font-weight: 500;
+    background: rgba(102, 126, 234, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 16px 0;
+}
+
+.battery-action-btn {
+    margin-top: 16px;
+    margin-bottom: 24px;
+    padding: 14px 28px;
+    font-size: 16px;
+}
+
+.battery-step {
+    text-align: left;
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 12px;
+    margin-top: 16px;
+}
+
+.battery-step h4 {
+    color: #2c3e50;
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+.battery-step ol {
+    color: #7f8c8d;
+    font-size: 14px;
+    line-height: 1.8;
+    padding-left: 20px;
+}
+
+/* 上传区域样式 */
+.upload-section {
+    margin-bottom: 20px;
+}
+
+.upload-label {
+    display: block;
+    color: #2c3e50;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.upload-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border: 2px dashed #e0e0e0;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.upload-container:hover {
+    background: #f0f1f3;
+    border-color: #667eea;
+}
+
+.upload-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 20px 40px;
+    background: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #667eea;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+.upload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.upload-btn:active {
+    transform: translateY(0);
+}
+
+.upload-icon {
+    font-size: 32px;
+}
+
+.upload-text {
+    font-size: 15px;
+}
+
+.upload-hint {
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 13px;
+    margin-top: 12px;
+    line-height: 1.5;
+}
+
+/* 音乐列表项增加删除按钮 */
+.music-item {
+    position: relative;
+}
+
+.music-delete-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.3s ease;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.2);
+}
+
+.music-item:hover .music-delete-btn {
+    opacity: 1;
+    display: flex;
+}
+
+.music-item.is-custom:hover .music-delete-btn {
+    display: flex;
+}
+
+.music-delete-btn:hover {
+    background: #c0392b;
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* 音乐列表样式 */
+.music-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.music-item {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background: white;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    gap: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.music-item:hover {
+    background: #f8f9fa;
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.music-item.active {
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+}
+
+.music-icon {
+    font-size: 28px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.music-info {
+    flex: 1;
+}
+
+.music-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 4px;
+}
+
+.music-desc {
+    font-size: 13px;
+    color: #7f8c8d;
+}
+
+.music-check {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.music-item.active .music-check {
+    display: flex;
+}
+
+/* 试听按钮样式 */
+.test-music-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+}
+
+.music-icon-small {
+    font-size: 18px;
+}
+
+@media (max-width: 360px) {
+    .time {
+        font-size: 40px;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        font-size: 14px;
+    }
+
+    .setting-item label {
+        flex: 0 0 auto;
+        min-width: 100px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    .settings-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+        bottom: 16px;
+        right: 16px;
+    }
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #e0e0e0;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #c0c0c0;
+}
+
+.settings-tab-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.settings-tab-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.settings-tab-content::-webkit-scrollbar-thumb {
+    background: #e0e0e0;
+    border-radius: 2px;
+}
+
+/* 隐藏移动端滚动条 */
+@media (max-width: 768px) {
+    .settings-tab-content::-webkit-scrollbar {
+        width: 0;
+        display: none;
+    }
+
+    body {
+        overflow-x: hidden;
+    }
+
+    .app-container {
+        margin-top: 3px;
+    }
+
+    .modal {
+        padding: 10px;
+    }
+}
+
