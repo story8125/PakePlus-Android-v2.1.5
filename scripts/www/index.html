@@ -3,15 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no,email=no,address=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>净水倒计时提醒</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
 <header>
-    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
         <h1 style="margin: 0;">净水倒计时提醒</h1>
-        <button class="header-settings-btn" onclick="showSettings()">⚙️</button>
+        <div style="display: flex; gap: 8px;">
+            <button class="header-filter-btn" onclick="showFilterPage()">💧</button>
+            <button class="header-settings-btn" onclick="showSettings()">⚙️</button>
+        </div>
     </div>
 </header>
 
@@ -23,11 +29,16 @@
                     <span class="status" id="wastewater-status">等待开始</span>
                 </div>
                 <div class="timer-display">
-                    <div class="time" id="wastewater-time">--:--</div>
-                    <div class="label" id="wastewater-label">未开始</div>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="wastewater-progress"></div>
+                    <div class="circular-progress" id="wastewater-progress-container">
+                        <svg class="progress-ring" width="200" height="200">
+                            <circle class="progress-ring-bg" cx="100" cy="100" r="90"/>
+                            <circle class="progress-ring-circle" id="wastewater-progress-ring" cx="100" cy="100" r="90"/>
+                        </svg>
+                        <div class="time-in-circle">
+                            <div class="time" id="wastewater-time">--:--</div>
+                            <div class="label" id="wastewater-label">未开始</div>
+                        </div>
+                    </div>
                 </div>
                 <div class="controls">
                     <button class="btn btn-start" id="wastewater-start" onclick="startWastewater()">开始</button>
@@ -42,15 +53,21 @@
                     <span class="status" id="purified-status">等待开始</span>
                 </div>
                 <div class="timer-display">
-                    <div class="time" id="purified-time">--:--</div>
-                    <div class="label" id="purified-label">未开始</div>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="purified-progress"></div>
+                    <div class="circular-progress" id="purified-progress-container">
+                        <svg class="progress-ring" width="200" height="200">
+                            <circle class="progress-ring-bg" cx="100" cy="100" r="90"/>
+                            <circle class="progress-ring-circle" id="purified-progress-ring" cx="100" cy="100" r="90"/>
+                        </svg>
+                        <div class="time-in-circle">
+                            <div class="time" id="purified-time">--:--</div>
+                            <div class="label" id="purified-label">未开始</div>
+                        </div>
+                    </div>
                 </div>
                 <div class="controls">
                     <button class="btn btn-start" id="purified-start" onclick="startPurified()" style="display: none;">开始净水</button>
                     <button class="btn btn-complete" id="purified-complete" onclick="completePurified()" style="display: none;">已完成更换</button>
+                    <button class="btn btn-complete" id="purified-start-confirm" onclick="confirmPurifiedStart()" style="display: none;">净水开始后请点击</button>
                 </div>
             </section>
         </main>
@@ -68,24 +85,104 @@
         <div class="modal" id="completion-modal" style="display: none;">
             <div class="modal-content completion">
                 <div class="modal-icon">🎉</div>
-                <div class="modal-message" id="completion-message">恭喜您已完成净水！</div>
+                <div class="modal-message" id="completion-message">恭喜您完成净水！请关闭水源</div>
                 <button class="btn btn-primary" onclick="closeCompletionModal()">确定</button>
+            </div>
+        </div>
+
+        <!-- 滤芯管理侧滑页面 -->
+        <div class="slide-page" id="filter-page">
+            <div class="slide-page-content">
+                <div class="slide-page-header">
+                    <h2>滤芯管理</h2>
+                    <button class="slide-page-close" onclick="hideFilterPage()">✕</button>
+                </div>
+
+                <div class="filter-sections">
+                    <!-- 主滤芯 -->
+                    <div class="filter-section collapsible" id="section-main">
+                        <h3 class="filter-section-title" onclick="toggleSection('section-main')">
+                            <span>主滤芯</span>
+                            <span class="collapse-icon">▼</span>
+                        </h3>
+                        <div class="filter-list" id="main-filter-list">
+                            <!-- 主滤芯列表 -->
+                        </div>
+                        <div class="filter-section-note">系统已预设5种核心滤芯，确保过滤流程完整</div>
+                    </div>
+
+                    <!-- 次滤芯 -->
+                    <div class="filter-section collapsible" id="section-secondary">
+                        <h3 class="filter-section-title" onclick="toggleSection('section-secondary')">
+                            <span>次滤芯</span>
+                            <span class="collapse-icon">▼</span>
+                        </h3>
+                        <div class="filter-list" id="secondary-filter-list">
+                            <!-- 次滤芯列表 -->
+                        </div>
+                        <button class="btn btn-secondary add-filter-btn" onclick="addSecondaryFilter()">
+                            <span>+ 添加次滤芯</span>
+                        </button>
+                    </div>
+
+                    <!-- 历史记录 -->
+                    <div class="filter-section collapsible" id="section-history">
+                        <h3 class="filter-section-title" onclick="toggleSection('section-history')">
+                            <span>更换记录</span>
+                            <span class="collapse-icon">▼</span>
+                        </h3>
+                        <div class="filter-history-stats" id="filter-history-stats">
+                            <!-- 费用统计看板 -->
+                        </div>
+                        <div class="filter-history-charts" id="filter-history-charts">
+                            <!-- 费用趋势折线图和更换频次日历热力图 -->
+                        </div>
+                        <div class="filter-history-list" id="filter-history-list">
+                            <!-- 历史记录列表 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 滤芯更换提醒弹窗 -->
+        <div class="modal" id="filter-reminder-modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-icon">💧</div>
+                <div class="modal-message">本月需更换滤芯，请按时进行更换操作</div>
+                <button class="btn btn-primary" onclick="closeFilterReminder()">确定</button>
+            </div>
+        </div>
+
+        <!-- 滤芯更换预测弹窗 -->
+        <div class="modal" id="filter-prediction-modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-icon">⏰</div>
+                <div class="modal-title">更换提醒</div>
+                <div class="prediction-message">根据您的使用习惯，建议提前购买滤芯</div>
+                <div class="prediction-actions">
+                    <button class="btn btn-secondary" onclick="closePredictionModal()">稍后提醒</button>
+                    <button class="btn btn-primary" onclick="closePredictionModal()">知道了</button>
+                </div>
             </div>
         </div>
 
         <!-- 设置弹窗 -->
         <div class="modal" id="settings-modal" style="display: none;">
-            <div class="modal-content settings-content">
-                <h2>设置</h2>
+                <div class="modal-content settings-content">
+                    <h2>设置</h2>
 
-                <div class="settings-tabs">
-                    <button class="tab-btn active" onclick="switchTab('wastewater')">废水桶时间</button>
-                    <button class="tab-btn" onclick="switchTab('purified')">净水桶时间</button>
-                    <button class="tab-btn" onclick="switchTab('music')">提醒声音</button>
-                    <button class="tab-btn" onclick="switchTab('battery')">电池优化</button>
-                </div>
+                    <div class="settings-tabs">
+                        <button class="tab-btn active" onclick="switchTab('wastewater')">废水桶时间</button>
+                        <button class="tab-btn" onclick="switchTab('purified')">净水桶时间</button>
+                        <button class="tab-btn" onclick="switchTab('music')">提醒设置</button>
+                    </div>
 
-                <div class="settings-tab-content" id="tab-wastewater">
+                    <div class="settings-tab-content" id="tab-wastewater">
+                    <div class="setting-item">
+                        <label>排废水时间（分钟）:</label>
+                        <input type="number" id="drain-wastewater-time" min="1" step="0.5">
+                    </div>
                     <div class="setting-item">
                         <label>大废水桶（分钟）:</label>
                         <input type="number" id="wastewater-time-0" min="1" step="0.5">
@@ -132,21 +229,70 @@
                 </div>
 
                 <div class="settings-tab-content" id="tab-music" style="display: none;">
-                    <div class="setting-item">
-                        <label>选择提醒声音:</label>
-                        <select id="music-select" onchange="selectMusic(this.value)">
-                            <option value="default">系统默认音效</option>
-                        </select>
-                    </div>
-                    <div class="setting-item">
-                        <label>上传自定义音乐:</label>
-                        <input type="file" id="custom-music-upload" accept="audio/*" onchange="handleCustomMusicUpload(this)">
+                    <div class="upload-section">
+                        <label class="upload-label">上传自定义音乐</label>
+                        <div class="upload-container">
+                            <input type="file" id="custom-music-upload" accept="audio/*,.mp3,.m4a,.flac,.wav,.ogg,.aac,.wma,.aiff,.au" onchange="handleCustomMusicUpload(this)" style="display: none;">
+                            <button class="upload-btn" onclick="document.getElementById('custom-music-upload').click()">
+                                <span class="upload-icon">📁</span>
+                                <span class="upload-text">选择文件</span>
+                            </button>
+                        </div>
                     </div>
                     <div class="music-list" id="music-list">
                         <!-- 自定义音乐列表 -->
                     </div>
                     <div class="setting-item">
-                        <button class="btn btn-secondary" onclick="testMusic()">试听当前声音</button>
+                        <button class="btn btn-secondary test-music-btn" onclick="testMusic()">
+                            <span class="music-icon-small">🔔</span>
+                            试听当前声音
+                        </button>
+                    </div>
+                    <div class="setting-item checkbox-setting">
+                        <label class="setting-label">
+                            <input type="checkbox" id="enable-sound" checked>
+                            <span>声音提醒</span>
+                        </label>
+                        <p class="setting-desc">提醒时播放提示音</p>
+                    </div>
+                    <div class="setting-item checkbox-setting">
+                        <label class="setting-label">
+                            <input type="checkbox" id="enable-vibration">
+                            <span>震动提醒</span>
+                        </label>
+                        <p class="setting-desc">提醒时震动手机</p>
+                    </div>
+                    <div class="setting-item checkbox-setting">
+                        <label class="setting-label">
+                            <input type="checkbox" id="immediate-reminder" checked onchange="toggleImmediateReminder()">
+                            <span>即刻提醒</span>
+                        </label>
+                        <p class="setting-desc">倒计时结束时提醒</p>
+                    </div>
+                    <div class="setting-item" id="advance-reminder-time-container" style="display: none;">
+                        <label>提前提醒（秒）:</label>
+                        <input type="number" id="advance-reminder-time" min="1" value="5">
+                    </div>
+                    <div class="setting-item checkbox-setting">
+                        <label class="setting-label">
+                            <input type="checkbox" id="enable-persistent">
+                            <span>持续提醒</span>
+                        </label>
+                        <p class="setting-desc">每30秒重复提醒，直到确认</p>
+                    </div>
+                    <div class="setting-item checkbox-setting">
+                        <label class="setting-label">
+                            <input type="checkbox" id="enable-statusbar">
+                            <span>常驻状态栏</span>
+                        </label>
+                        <p class="setting-desc">保持应用在状态栏显示</p>
+                    </div>
+                    <div class="setting-item checkbox-setting">
+                        <label class="setting-label">
+                            <input type="checkbox" id="keep-screen-on">
+                            <span>保持屏幕常亮</span>
+                        </label>
+                        <p class="setting-desc">运行时屏幕不会自动关闭</p>
                     </div>
                 </div>
 
